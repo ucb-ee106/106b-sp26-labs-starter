@@ -391,7 +391,7 @@ class VisualServo(Node):
 
     def _execute_joint_trajectory(self, joint_traj):
         """Execute trajectory using the selected controller"""
-        if self.controller_type == 'trajectory':
+        if self.controller_type == 'default':
             success = self.trajectory_controller.execute_joint_trajectory(joint_traj)
             if not success:
                 self.get_logger().error('Trajectory execution failed')
