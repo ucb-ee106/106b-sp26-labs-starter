@@ -19,6 +19,7 @@ import argparse
 import sys
 import select
 import time
+import subprocess
 
 from .trajectories import LinearTrajectory, CircularTrajectory
 from .controller import UR7eTrajectoryController, PIDJointVelocityController
@@ -45,12 +46,11 @@ class VisualServo(Node):
             self.get_logger().info('Waiting for /compute_ik service...')
 
         self.controller_type = args.controller
-        if self.controller_type == 'default':
-            self.trajectory_controller = UR7eTrajectoryController(self)
-        elif self.controller_type == 'pid':
+        # Always create trajectory controller for moving to start position
+        self.trajectory_controller = UR7eTrajectoryController(self)
 
+        if self.controller_type == 'pid':
             # PID gains tuned for UR7e (Use these as a start)
-
             Kp = 0.2 * np.array([0.4, 2, 1.7, 1.5, 2, 2])
             Kd = 0.01 * np.array([2, 1, 2, 0.5, 0.8, 0.8])
             Ki = 0.01 * np.array([1.4, 1.4, 1.4, 1, 0.6, 0.6])
@@ -347,6 +347,9 @@ class VisualServo(Node):
         self.get_logger().info("Moving to trajectory start position...")
         self._move_to_start(joint_traj.points[0].positions)
 
+        # Switch to the appropriate ROS2 controller after moving to start
+        switch_controllers(self.controller_type)
+
         self._execute_joint_trajectory(joint_traj)
 
     def _move_to_start(self, start_positions):
@@ -578,6 +581,41 @@ class VisualServo(Node):
         self.get_logger().info("=== Execution Complete ===")
 
 
+def switch_controllers(controller_type):
+    """
+    Switch ROS2 controllers based on the selected controller type.
+
+    Parameters
+    ----------
+    controller_type : str
+        Either 'default' or 'pid'
+    """
+    if controller_type == 'default':
+        cmd = [
+            'ros2', 'control', 'switch_controllers',
+            '--deactivate', 'forward_velocity_controller',
+            '--activate', 'scaled_joint_trajectory_controller'
+        ]
+    else:  # pid
+        cmd = [
+            'ros2', 'control', 'switch_controllers',
+            '--deactivate', 'scaled_joint_trajectory_controller',
+            '--activate', 'forward_velocity_controller'
+        ]
+
+    print(f"Switching controllers for '{controller_type}' mode...")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            print("Switching controllers successful")
+        else:
+            print(f"Controller switch warning: {result.stderr}")
+    except subprocess.TimeoutExpired:
+        print("Controller switch timed out")
+    except Exception as e:
+        print(f"Controller switch failed: {e}")
+
+
 def main(args=None):
     parser = argparse.ArgumentParser(description='Bonk')
     parser.add_argument('--task', '-t', type=str, default='line',
@@ -603,6 +641,9 @@ def main(args=None):
     except KeyboardInterrupt:
         node.get_logger().info("Interrupted by user")
     finally:
+        # Switch back to default controller on cleanup
+        print("Cleaning up: switching back to default controller...")
+        switch_controllers('default')
         node.destroy_node()
         rclpy.shutdown()
 
