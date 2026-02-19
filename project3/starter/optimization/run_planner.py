@@ -2,12 +2,12 @@
 import argparse
 import math
 
-from obstacles import default_obstacle_scene
-from unicycle_planner import (
+from optimization.obstacles import default_obstacle_scene
+from optimization.unicycle_planner import (
     UnicyclePlanner, PlannerParams,
     UnicycleTrackingPlanner, TrackingParams,
 )
-from plot_trajectory import plot_trajectory
+from optimization.plot_trajectory import plot_trajectory
 
 
 def main():

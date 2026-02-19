@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import casadi as ca
 
-from obstacles import CircularObstacle
+from optimization.obstacles import CircularObstacle
 
 @dataclass
 class PlannerParams:

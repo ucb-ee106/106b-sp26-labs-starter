@@ -1,5 +1,5 @@
 import numpy as np
-from ..utils.map_utils import worldtocell, celltoworld, celltonumber, numbertocell
+from utils.map_utils import worldtocell, celltoworld, celltonumber, numbertocell
 
 
 def shortestpath(map_data, start, goal):

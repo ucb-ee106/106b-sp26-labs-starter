@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
-from obstacles import CircularObstacle
-from unicycle_planner import PlannerResult
+from optimization.obstacles import CircularObstacle
+from optimization.unicycle_planner import PlannerResult
 
 
 def plot_trajectory(
