@@ -193,7 +193,7 @@ def optimize_sufficient_condition(G: np.array, M=20):
     Parameters
     ----------
     G: grasp matrix
-    K: number of approximations to the norm ball
+    M: number of approximations to the norm ball
 
     Returns the Q- value
     """
