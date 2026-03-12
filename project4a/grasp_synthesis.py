@@ -177,7 +177,7 @@ def build_grasp_matrix(positions: np.array, friction_cones: list, origin=np.zero
 
 def optimize_necessary_condition(G: np.array, env: grasp_synthesis.AllegroHandEnv):
     """
-    Returns the result of the L2 optimization on G
+    Returns the result of the L2 optimization on G (Q+ distance)
 
     Parameters
     ----------
@@ -195,6 +195,6 @@ def optimize_sufficient_condition(G: np.array, M=20):
     G: grasp matrix
     M: number of approximations to the norm ball
 
-    Returns the Q- value
+    Returns the Q- distance
     """
     #YOUR CODE HERE
