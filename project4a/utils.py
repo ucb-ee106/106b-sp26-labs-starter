@@ -1,5 +1,7 @@
 import numpy as np
 import dm_control
+import types
+import AllegroHandEnv
 
 def clip_to_valid_state(physics: dm_control.mjcf.physics.Physics, qpos: np.array):
     """
@@ -17,6 +19,37 @@ def clip_to_valid_state(physics: dm_control.mjcf.physics.Physics, qpos: np.array
             joint_range[1])
 
     return qpos_clipped
+
+def numeric_gradient(function: types.FunctionType, 
+                     q_h: np.array, 
+                     env: AllegroHandEnv, 
+                     fingertip_names: list[str], 
+                     in_contact: bool, 
+                     eps=0.01):
+    """
+    This function approximates the gradient of the joint_space_objective
+
+    Parameters
+    ----------
+    function: function we are taking the gradient of
+    q_h: joint configuration of the hand 
+    env: AllegroHandEnv instance 
+    fingertip_names: names of the fingertips as defined in the MJCF
+    in_contact: helper variable to determine if the fingers are in contact with the object
+    eps: hyperparameter for the delta of the gradient 
+
+    Output
+    ------
+    Approximate gradient of the inputted function
+    """
+    baseline = function(q_h, env, fingertip_names, in_contact)
+    grad = np.zeros_like(q_h)
+    for i in range(len(q_h)):
+        q_h_pert = q_h.copy()
+        q_h_pert[i] += eps
+        val_pert = function(q_h_pert, env, fingertip_names, in_contact)
+        grad[i] = (val_pert - baseline) / eps
+    return grad
 
 def quaternion_error_naive(current_quat: np.array, target_quat: np.array):
     """

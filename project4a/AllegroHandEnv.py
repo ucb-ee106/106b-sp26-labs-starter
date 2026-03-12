@@ -16,22 +16,43 @@ class AllegroHandEnv:
         self.physics.data.qpos[self.q_h_slice] = q_h
         self.physics.forward()
 
-    def get_fingertip_positions(self, fingertip_names: list[str]):
+    def get_body_positions(self, body_names: list[str]):
         """
         Input: list of fingertip names in the XML
         Returns: (num_fingers x 3) np.array containing 
         finger positions in workspace coordinates
         """
-        #YOUR CODE HERE
+        pos_array = np.zeros((len(body_names), 3))
+        for i in range(len(body_names)):
+            body_id = self.physics.model.body(body_names[i]).id
+            body_pos = self.physics.data.body(body_id).xpos
+            pos_array[i] = body_pos
+        return pos_array
 
-    def get_fingertip_normals(self, contact: mj._structs._MjContactList):
+    def get_contact_normals_and_positions(self, contact: mj._structs._MjContactList):
         """
         Input: contact data structure that contains MuJoCo contact information
         Returns the normal vector for each finger that's in contact with the ball
         
-        Tip: See information about the mjContact_ struct here: https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjcontact
         """
-        #YOUR CODE HERE
+        geom_id_pairs = contact.geom
+        model_ptr = self.physics.model.ptr
+        contact_struct = self.physics.data.ptr.contact
+
+        # Indices of only the contacts between the object and any part of the hand
+        indices = [
+            i
+            for i, pair in enumerate(geom_id_pairs)
+            if "table/table_geom" not in
+               [mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, gid) for gid in pair]
+            and (mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, pair[0]) == self.object_name)
+            or (mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, pair[1]) == self.object_name)
+        ]
+
+        contact_normals = np.array([contact_struct.frame[i] for i in indices])
+        contact_positions = np.array([contact_struct.pos[i] for i in indices])
+        contact_normals[:3] *= -1
+        return contact_normals, contact_positions
 
 class AllegroHandEnvSphere(AllegroHandEnv):
     def __init__(self, physics: dm_control.mjcf.physics.Physics, 
