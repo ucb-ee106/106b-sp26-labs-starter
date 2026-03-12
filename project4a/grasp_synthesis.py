@@ -106,7 +106,6 @@ def joint_space_objective(env: grasp_synthesis.AllegroHandEnv,
     beta: weight coefficient on the surface penalty 
     friction_coeff: Friction coefficient for the ball
     num_friction_cone_approx: number of approximation vectors in the friction cone
-
     
     Output
     ------
@@ -128,7 +127,7 @@ def joint_space_objective(env: grasp_synthesis.AllegroHandEnv,
         directions_list = []
         for i in range(len(contact_frames)):
             contact_frame = contact_frames[i]
-            directions_i = build_friction_cones(contact_frame, friction_coeff, num_friction_cone_approx)
+            directions_i = build_friction_cone(contact_frame, friction_coeff, num_friction_cone_approx)
             directions_list.append(directions_i)
 
         G = build_grasp_matrix(contact_positions, directions_list, origin=env.sphere_center)
@@ -143,21 +142,19 @@ def joint_space_objective(env: grasp_synthesis.AllegroHandEnv,
         return score_fc + beta * surface_penalty
 
 
-def build_friction_cones(normal: np.array, mu=0.5, num_approx=4):
+def build_friction_cone(normal: np.array, mu=0.5, num_approx=4):
     """
     This function builds a discrete friction cone around each normal vector. 
 
     Parameters
     ----------
-    normal: nx3 np.array where n is the number of normal directions
-        normal directions for each contact
+    normal: (,9) np.array containing the normal and tangent directions of the contact
     mu: friction coefficient
     num_approx: number of approximation vectors in the friction cone
 
     Output
     ------
-    friction_cone_vectors: array of discretized friction cones represented 
-    as vectors
+    friction_cone_vectors: array of discretized friction cone vectors around the given normal
     """
     #YOUR CODE HERE
 
@@ -172,7 +169,7 @@ def build_grasp_matrix(positions: np.array, friction_cones: list, origin=np.zero
     firction_cone: a list of lists as outputted by build_friction_cones. 
     origin: the torque reference. In this case, it's the object center.
     
-    Return a 2D numpy array G with shape (6, sum_of_all_cone_directions).
+    Return a 2D numpy array G with shape (6, number_of_cone_directions).
     """
     #YOUR CODE HERE
 
