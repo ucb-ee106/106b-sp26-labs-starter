@@ -57,7 +57,7 @@ def synthesize_grasp(env: grasp_synthesis.AllegroHandEnv,
                 in_contact = True
         
         # Evaluate the objective function and check its gradient
-        fval = joint_space_objective(q_h, env, fingertip_names, in_contact)
+        fval = joint_space_objective(env, q_h, fingertip_names, in_contact)
         grad = numeric_gradient(joint_space_objective, q_h, env, fingertip_names, in_contact)
 
         # Update the joint configuration
@@ -67,7 +67,7 @@ def synthesize_grasp(env: grasp_synthesis.AllegroHandEnv,
         q_h_new = clip_to_valid_state(env.physics, q_h_new, env.q_h_slice, 16)
 
         # Evaluate the objective function with the new joint configuration to measure improvement
-        fval_new = joint_space_objective(q_h_new, env, fingertip_names, in_contact)
+        fval_new = joint_space_objective(env, q_h_new, fingertip_names, in_contact)
 
         # Only update q_h if the objective function has improved
         if fval_new < fval:
