@@ -45,6 +45,7 @@ def synthesize_grasp(env: grasp_synthesis.AllegroHandEnv,
                 for pair in geom_id_pairs
             ])
 
+            # Specify the exact geom contacts we're looking for (if you change the allegro hand urdf you might want to check that these still correspond to the fingertips)
             one   = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_12']
             two   = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_23']
             three = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_34']
