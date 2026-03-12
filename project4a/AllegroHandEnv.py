@@ -32,8 +32,7 @@ class AllegroHandEnv:
     def get_contact_normals_and_positions(self, contact: mj._structs._MjContactList):
         """
         Input: contact data structure that contains MuJoCo contact information
-        Returns the normal vector for each finger that's in contact with the ball
-        
+        Returns the normal vector and positions for each part of the hand that's in contact with the ball
         """
         geom_id_pairs = contact.geom
         model_ptr = self.physics.model.ptr
