@@ -45,13 +45,14 @@ class AllegroHandEnv:
             for i, pair in enumerate(geom_id_pairs)
             if "table/table_geom" not in
                [mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, gid) for gid in pair]
-            and (mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, pair[0]) == self.object_name)
-            or (mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, pair[1]) == self.object_name)
+            and ((mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, pair[0]) == self.object_name)
+            or (mj.mj_id2name(model_ptr, mj.mjtObj.mjOBJ_GEOM, pair[1]) == self.object_name))
         ]
 
         contact_normals = np.array([contact_struct.frame[i] for i in indices])
         contact_positions = np.array([contact_struct.pos[i] for i in indices])
-        contact_normals[:3] *= -1
+        # Negate normal vectors so they point towards the object
+        contact_normals[:, :3] *= -1
         return contact_normals, contact_positions
 
 class AllegroHandEnvSphere(AllegroHandEnv):
