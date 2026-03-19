@@ -42,12 +42,12 @@ def numeric_gradient(function: types.FunctionType,
     ------
     Approximate gradient of the inputted function
     """
-    baseline = function(q_h, env, fingertip_names, in_contact)
+    baseline = function(env, q_h, fingertip_names, in_contact)
     grad = np.zeros_like(q_h)
     for i in range(len(q_h)):
         q_h_pert = q_h.copy()
         q_h_pert[i] += eps
-        val_pert = function(q_h_pert, env, fingertip_names, in_contact)
+        val_pert = function(env, q_h_pert, fingertip_names, in_contact)
         grad[i] = (val_pert - baseline) / eps
     return grad
 

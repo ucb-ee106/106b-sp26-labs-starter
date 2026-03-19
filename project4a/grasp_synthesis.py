@@ -123,7 +123,7 @@ def joint_space_objective(env: grasp_synthesis.AllegroHandEnv,
         return beta * surface_penalty
     else: # Fingers are in contact, so we calculate Q+ and Q- penalty
         # Create friction cone
-        contact_frames, contact_positions = env.get_contact_frames(env.physics.data.ptr.contact)
+        contact_frames, contact_positions = env.get_contact_normals_and_positions(env.physics.data.ptr.contact)
         directions_list = []
         for i in range(len(contact_frames)):
             contact_frame = contact_frames[i]
