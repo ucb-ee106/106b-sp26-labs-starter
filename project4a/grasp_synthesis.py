@@ -64,7 +64,7 @@ def synthesize_grasp(env: grasp_synthesis.AllegroHandEnv,
         q_h_new = q_h.copy() - lr*grad
         
         # Clip joint configuration to be in bounds
-        q_h_new = clip_to_valid_state(env.physics, q_h_new, env.q_h_slice, 16)
+        q_h_new = clip_to_valid_state(env.physics, q_h_new)
 
         # Evaluate the objective function with the new joint configuration to measure improvement
         fval_new = joint_space_objective(env, q_h_new, fingertip_names, in_contact)
