@@ -46,13 +46,15 @@ def synthesize_grasp(env: grasp_synthesis.AllegroHandEnv,
             ])
 
             # Specify the exact geom contacts we're looking for (if you change the allegro hand urdf you might want to check that these still correspond to the fingertips)
-            one   = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_12']
-            two   = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_23']
-            three = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_34']
-            four  = ['ball/sphere', 'sawyer/allegro_right//unnamed_geom_45']
-
+            one   = ['ball/ball_geom', 'sawyer/allegro_right//unnamed_geom_12']
+            two   = ['ball/ball_geom', 'sawyer/allegro_right//unnamed_geom_23']
+            three = ['ball/ball_geom', 'sawyer/allegro_right//unnamed_geom_34']
+            four  = ['ball/ball_geom', 'sawyer/allegro_right//unnamed_geom_45']
+            
+          
             # Check if all four fingertips are touching the object
-            if (one in geoms and two in geoms and three in geoms and four in geoms and
+            geoms_list = geoms.tolist()
+            if (one in geoms_list and two in geoms_list and three in geoms_list and four in geoms_list and
                     env.physics.data.ptr.contact.frame.shape[0] >= 4):
                 in_contact = True
         
